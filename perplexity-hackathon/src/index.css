@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Override Tailwind Typography styles for citations */
+.prose sup a {
+  text-decoration: none !important;
+  color: #2563eb !important;
+  cursor: pointer !important;
+}
+
+.prose sup a:hover {
+  text-decoration: underline !important;
+}
+
+/* Ensure proper citation spacing */
+.prose sup {
+  margin: 0 0.15em !important;
+  font-size: 0.75em !important;
+}
+
+/* Ensure full width container */
+.container {
+  width: 100% !important;
+  max-width: 1280px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
