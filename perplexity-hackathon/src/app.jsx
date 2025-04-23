@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const SONAR_API_URL = 'https://api.perplexity.ai/chat/completions';
-const SONAR_API_KEY = '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';
+const LOCAL_STORAGE_KEY = 'perplexity_api_key';
 
 export default function App() {
   const [conclusion, setConclusion] = useState('');
@@ -14,7 +14,17 @@ export default function App() {
   const [followUp, setFollowUp] = useState('');
   const [followUpResult, setFollowUpResult] = useState(null);
   const [error, setError] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem(LOCAL_STORAGE_KEY) || '');
   const resultsRef = useRef(null);
+
+  useEffect(() => {
+    if (apiKey) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, apiKey);
+    } else {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    }
+  }, [apiKey]);
 
   // Auto-scroll effect
   useEffect(() => {
@@ -96,11 +106,17 @@ export default function App() {
   };
 
   const fetchEvidence = async (prompt) => {
+    if (!apiKey) {
+      setError('Please enter your Perplexity API key in settings');
+      setLoading(false);
+      return null;
+    }
+
     try {
       const response = await fetch(SONAR_API_URL, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${SONAR_API_KEY}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -250,140 +266,207 @@ Your response should read like a well-structured academic analysis, not a bullet
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-5xl font-bold mb-8 text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-          Reverse Researcher
-        </h1>
-
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg">
-            <div className="text-red-700 font-medium">{error}</div>
-          </div>
-        )}
-
-        <div className="mb-8">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="conclusion">
-            Enter your conclusion
-          </label>
-          <textarea
-            id="conclusion"
-            className="w-full p-4 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
-            rows={3}
-            placeholder="e.g., 'Remote work improves productivity'"
-            value={conclusion}
-            onChange={e => setConclusion(e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-4 mb-8 justify-center">
-          {['support', 'oppose', 'balanced'].map(opt => (
-            <button
-              key={opt}
-              onClick={() => setAngle(opt)}
-              className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                angle === opt 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transform -translate-y-0.5' 
-                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-500'
-              }`}
-            >
-              {opt.charAt(0).toUpperCase() + opt.slice(1)} Only
-            </button>
-          ))}
-        </div>
-
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Reverse Researcher
+          </h1>
           <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="px-8 py-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            onClick={() => setShowSettings(true)}
+            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors flex items-center gap-2"
           >
-            {loading ? (
-              <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Researching...
-              </span>
-            ) : 'Research'}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+            </svg>
+            Settings
           </button>
         </div>
 
-        <div ref={resultsRef} className="grid grid-cols-1 gap-6 mb-8">
-          {results.support && (
-            <div className="w-full border-2 border-green-200 rounded-xl p-8 shadow-lg bg-white">
-              <h2 className="text-2xl font-bold mb-6 text-green-700">Supporting Evidence</h2>
-              <div 
-                className="prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ 
-                  __html: formatResponse(results.support.choices?.[0]?.message?.content, results.support) 
-                }}
-              />
-            </div>
-          )}
-          {results.oppose && (
-            <div className="w-full border-2 border-red-200 rounded-xl p-8 shadow-lg bg-white">
-              <h2 className="text-2xl font-bold mb-6 text-red-700">Opposing Evidence</h2>
-              <div 
-                className="prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ 
-                  __html: formatResponse(results.oppose.choices?.[0]?.message?.content, results.oppose) 
-                }}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="mt-auto">
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="followUp">
-              Follow-up Question
-            </label>
-            <div className="flex gap-4">
-              <input
-                id="followUp"
-                type="text"
-                className="flex-1 p-4 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
-                placeholder="Ask a follow-up question..."
-                value={followUp}
-                onChange={e => setFollowUp(e.target.value)}
-              />
-              <button
-                onClick={handleFollowUp}
-                disabled={loading}
-                className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none whitespace-nowrap"
-              >
-                {loading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Researching...
-                  </span>
-                ) : 'Ask Follow-Up'}
-              </button>
+        {/* Settings Modal */}
+        {showSettings && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full relative">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Settings</h2>
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-1">
+                    Perplexity API Key
+                  </label>
+                  <input
+                    type="password"
+                    id="apiKey"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter your API key"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Get your API key from{' '}
+                    <a
+                      href="https://docs.perplexity.ai/docs/getting-started"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      Perplexity AI
+                    </a>
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Done
+                </button>
+              </div>
             </div>
           </div>
+        )}
 
-          {followUpResult && (
-            <div className="w-full border-2 border-blue-200 rounded-xl p-8 shadow-lg bg-white mb-8">
-              <h2 className="text-2xl font-bold mb-6 text-blue-700">Follow-up Response</h2>
-              <div 
-                className="prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ 
-                  __html: formatResponse(followUpResult.choices?.[0]?.message?.content, followUpResult) 
-                }}
-              />
+        {/* Rest of the UI */}
+        <div className="relative z-0">
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg">
+              <div className="text-red-700 font-medium">{error}</div>
             </div>
           )}
 
-          <div className="flex justify-center">
+          <div className="mb-8">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="conclusion">
+              Enter your conclusion
+            </label>
+            <textarea
+              id="conclusion"
+              className="w-full p-4 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
+              rows={3}
+              placeholder="e.g., 'Remote work improves productivity'"
+              value={conclusion}
+              onChange={e => setConclusion(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-4 mb-8 justify-center">
+            {['support', 'oppose', 'balanced'].map(opt => (
+              <button
+                key={opt}
+                onClick={() => setAngle(opt)}
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
+                  angle === opt 
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transform -translate-y-0.5' 
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-500'
+                }`}
+              >
+                {opt.charAt(0).toUpperCase() + opt.slice(1)} Only
+              </button>
+            ))}
+          </div>
+
+          <div className="flex justify-center mb-8">
             <button
-              onClick={handleExportPDF}
-              className="px-6 py-3 rounded-lg bg-gradient-to-r from-gray-600 to-gray-700 text-white font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200"
+              onClick={handleSubmit}
+              disabled={loading}
+              className="px-8 py-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Export to PDF
+              {loading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Researching...
+                </span>
+              ) : 'Research'}
             </button>
+          </div>
+
+          <div ref={resultsRef} className="grid grid-cols-1 gap-6 mb-8">
+            {results.support && (
+              <div className="w-full border-2 border-green-200 rounded-xl p-8 shadow-lg bg-white">
+                <h2 className="text-2xl font-bold mb-6 text-green-700">Supporting Evidence</h2>
+                <div 
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ 
+                    __html: formatResponse(results.support.choices?.[0]?.message?.content, results.support) 
+                  }}
+                />
+              </div>
+            )}
+            {results.oppose && (
+              <div className="w-full border-2 border-red-200 rounded-xl p-8 shadow-lg bg-white">
+                <h2 className="text-2xl font-bold mb-6 text-red-700">Opposing Evidence</h2>
+                <div 
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ 
+                    __html: formatResponse(results.oppose.choices?.[0]?.message?.content, results.oppose) 
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="mt-auto">
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="followUp">
+                Follow-up Question
+              </label>
+              <div className="flex gap-4">
+                <input
+                  id="followUp"
+                  type="text"
+                  className="flex-1 p-4 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
+                  placeholder="Ask a follow-up question..."
+                  value={followUp}
+                  onChange={e => setFollowUp(e.target.value)}
+                />
+                <button
+                  onClick={handleFollowUp}
+                  disabled={loading}
+                  className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none whitespace-nowrap"
+                >
+                  {loading ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Researching...
+                    </span>
+                  ) : 'Ask Follow-Up'}
+                </button>
+              </div>
+            </div>
+
+            {followUpResult && (
+              <div className="w-full border-2 border-blue-200 rounded-xl p-8 shadow-lg bg-white mb-8">
+                <h2 className="text-2xl font-bold mb-6 text-blue-700">Follow-up Response</h2>
+                <div 
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ 
+                    __html: formatResponse(followUpResult.choices?.[0]?.message?.content, followUpResult) 
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="flex justify-center">
+              <button
+                onClick={handleExportPDF}
+                className="px-6 py-3 rounded-lg bg-gradient-to-r from-gray-600 to-gray-700 text-white font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200"
+              >
+                Export to PDF
+              </button>
+            </div>
           </div>
         </div>
       </div>
