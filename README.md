@@ -33,17 +33,23 @@ npm install
 yarn install
 ```
 
-3. Create a `.env` file in the root directory:
-```env
-VITE_PERPLEXITY_API_KEY=your_api_key_here
-```
-
-4. Start the development server:
+3. Start the development server:
 ```bash
 npm run dev
 # or
 yarn dev
 ```
+4. Click the settings cog and add your API key
+
+5. Enter your conclusion and choose support, opposed or balanced
+
+6. Click research
+
+7. Ask any questions for a general Q&A response via the follow-up questiosn section.
+
+8. Refine and revise your conclusion statment
+
+9. Export as a PDF for use else where!
 
 ## 🎮 How to Use
 
