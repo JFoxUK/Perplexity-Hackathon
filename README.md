@@ -120,9 +120,9 @@ This is a hackathon project, but suggestions and feedback are welcome! Please fe
 - [@JFoxUK](https://github.com/JFoxUK)
 
 ## 🎥 Demo Video
-[Link to your 3-minute demo video] PLACEHOLDER
+[Demo Video on Youtube](https://youtu.be/q_d3M2y_R3g)
 
 ## 🔗 Links
-- [Devpost Submission] PLACEHOLDER
-- [Live Demo] PLACEHOLDER
-- [Project Documentation] PLACEHOLDER
+- [Devpost Submission](https://devpost.com/software/reverse-researcher)
+- [Live Demo]((https://youtu.be/q_d3M2y_R3g)
+- [Project Documentation](https://github.com/JFoxUK/Perplexity-Hackathon)
