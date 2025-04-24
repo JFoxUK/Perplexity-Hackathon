@@ -1,7 +1,7 @@
 # Reverse Researcher
 
 ## 🎯 Project Overview
-Reverse Researcher is an innovative research tool built for the Perplexity Hackathon 2024. Instead of starting with a question, users start with a conclusion and the tool uses Perplexity's Sonar API to find supporting and opposing evidence, creating a balanced view of any topic.
+Reverse Researcher is an innovative research tool built for the Perplexity Hackathon 2025. Instead of starting with a question, users start with a conclusion and the tool uses Perplexity's Sonar API to find supporting and opposing evidence, creating a balanced view of any topic.
 
 ### 🌟 Key Features
 - **Balanced Research**: Automatically finds both supporting and opposing evidence for any conclusion
