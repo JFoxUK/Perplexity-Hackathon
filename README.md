@@ -1,4 +1,5 @@
 # Reverse Researcher
+[![Deploy to GitHub Pages](https://github.com/JFoxUK/Perplexity-Hackathon/actions/workflows/deploy.yml/badge.svg)](https://github.com/JFoxUK/Perplexity-Hackathon/actions/workflows/deploy.yml)
 
 ## 🎯 Project Overview
 Reverse Researcher is an innovative research tool built for the Perplexity Hackathon 2025. Instead of starting with a question, users start with a conclusion and the tool uses Perplexity's Sonar API to find supporting and opposing evidence, creating a balanced view of any topic.
@@ -123,6 +124,7 @@ This is a hackathon project, but suggestions and feedback are welcome! Please fe
 [Demo Video on Youtube](https://youtu.be/q_d3M2y_R3g)
 
 ## 🔗 Links
+- [TRY ME](https://jfoxuk.github.io/Perplexity-Hackathon/)
 - [Devpost Submission](https://devpost.com/software/reverse-researcher)
-- [Live Demo]((https://youtu.be/q_d3M2y_R3g)
+- [Live Demo](https://youtu.be/q_d3M2y_R3g)
 - [Project Documentation](https://github.com/JFoxUK/Perplexity-Hackathon)
