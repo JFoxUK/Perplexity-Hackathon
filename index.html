@@ -7,6 +7,21 @@
     <title>Reverse Researcher</title>
     <base href="/reverse-researcher/" />
     <meta name="description" content="A research assistant that helps you find supporting and opposing evidence for your conclusions." />
+    <script>
+      // Handle redirects from 404.html
+      (function() {
+        const search = window.location.search;
+        if (search.includes('?/')) {
+          const redirectPath = search.substring(2);
+          const queryParams = redirectPath.includes('&') ? '?' + redirectPath.substring(redirectPath.indexOf('&') + 1) : '';
+          const pathOnly = redirectPath.includes('&') ? redirectPath.substring(0, redirectPath.indexOf('&')) : redirectPath;
+          
+          window.history.replaceState(null, null, 
+            window.location.pathname.split('?')[0] + pathOnly + queryParams + window.location.hash
+          );
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
